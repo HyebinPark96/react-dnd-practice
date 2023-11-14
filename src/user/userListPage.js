@@ -43,13 +43,13 @@ const UserListPage = () => {
       },
     },
     columns: {
-      online: {
-        id: "1",
+      "online": {
+        id: "online",
         title: "online",
         userIds: ["A", "B", "C"],
       },
-      offline: {
-        id: "2",
+      "offline": {
+        id: "offline",
         title: "offline",
         userIds: ["D", "E"],
       },
@@ -59,11 +59,11 @@ const UserListPage = () => {
 
   const Column = ({ column, users }) => {
     return (
-      <Droppable droppableId={column.id} direction="horizontal">
+      <Droppable droppableId={column.id.toString()} direction="horizontal">
         {(provided) => (
           <span {...provided.droppableProps} ref={provided.innerRef}>
             {users.map((user, idx) => (
-              <User key={user.id} user={user} index={idx} />
+              <User key={user.id.toString()} user={user} index={idx} />
             ))}
             {provided.placeholder}
           </span>
@@ -74,14 +74,16 @@ const UserListPage = () => {
 
   const User = ({ user, index }) => {
     return (
-      <Draggable draggableId={user.id} index={index}>
+      // {/* draggableId와 index props 반드시 필요 */}
+      <Draggable key={user.id.toString()} draggableId={user.id.toString()} index={index}> 
         {(provided) => (
           <span
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             ref={provided.innerRef}
           >
-            <img src={user.avatar} style={{ margin: "10px" }} alt="사진" />
+            {/* <img src={user.avatar} alt="사진" /> */}
+            {user.first_name}
           </span>
         )}
       </Draggable>
@@ -89,8 +91,35 @@ const UserListPage = () => {
   };
 
   const onDragEnd = (result) => {
-    console.log(result.source);
-    console.log(result.destination);
+    console.log(result);
+
+    const { destination, source, draggableId } = result;
+    if (!destination) return;
+    if (
+      destination.droppableId === source.droppableId &&
+      source.index === destination.index
+    )
+      return;
+
+    const column = data.columns[source.droppableId];
+    const newUserIds = Array.from(column.userIds);
+    newUserIds.splice(source.index, 1);
+    newUserIds.splice(destination.index, 0, draggableId);
+
+    const newColumn = {
+      ...column,
+      userIds: newUserIds,
+    };
+
+    const newData = {
+      ...data,
+      columns: {
+        ...data.columns,
+        [newColumn.id]: newColumn,
+      },
+    };
+
+    setData(newData);
   };
 
   return (
