@@ -6,35 +6,35 @@ import { DragDropContext } from "react-beautiful-dnd";
 const UserListPage = () => {
   const [data, setData] = useState({
     users: {
-      A: {
+      "A": {
         id: "A",
         email: "michael.lawson@reqres.in",
         first_name: "Michael",
         last_name: "Lawson",
         avatar: "https://reqres.in/img/faces/7-image.jpg",
       },
-      B: {
+      "B": {
         id: "B",
         email: "lindsay.ferguson@reqres.in",
         first_name: "Lindsay",
         last_name: "Ferguson",
         avatar: "https://reqres.in/img/faces/8-image.jpg",
       },
-      C: {
+      "C": {
         id: "C",
         email: "tobias.funke@reqres.in",
         first_name: "Tobias",
         last_name: "Funke",
         avatar: "https://reqres.in/img/faces/9-image.jpg",
       },
-      D: {
+      "D": {
         id: "D",
         email: "byron.fields@reqres.in",
         first_name: "Byron",
         last_name: "Fields",
         avatar: "https://reqres.in/img/faces/10-image.jpg",
       },
-      E: {
+      "E": {
         id: "E",
         email: "george.edwards@reqres.in",
         first_name: "George",
@@ -59,11 +59,11 @@ const UserListPage = () => {
 
   const Column = ({ column, users }) => {
     return (
-      <Droppable droppableId={column.id.toString()} direction="horizontal">
+      <Droppable droppableId={column.id} direction="horizontal">
         {(provided) => (
           <span {...provided.droppableProps} ref={provided.innerRef}>
             {users.map((user, idx) => (
-              <User key={user.id.toString()} user={user} index={idx} />
+              <User key={user.id} user={user} index={idx} />
             ))}
             {provided.placeholder}
           </span>
@@ -74,8 +74,8 @@ const UserListPage = () => {
 
   const User = ({ user, index }) => {
     return (
-      // {/* draggableId와 index props 반드시 필요 */}
-      <Draggable key={user.id.toString()} draggableId={user.id.toString()} index={index}> 
+      // draggableId, key, index 반드시 필요 / key와 draggableId는 동일하게. }
+      <Draggable key={user.id} draggableId={user.id} index={index}> 
         {(provided) => (
           <span
             {...provided.draggableProps}
@@ -95,11 +95,7 @@ const UserListPage = () => {
 
     const { destination, source, draggableId } = result;
     if (!destination) return;
-    if (
-      destination.droppableId === source.droppableId &&
-      source.index === destination.index
-    )
-      return;
+    if (destination.droppableId === source.droppableId && source.index === destination.index) return;
 
     const column = data.columns[source.droppableId];
     const newUserIds = Array.from(column.userIds);
